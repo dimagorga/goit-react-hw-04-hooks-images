@@ -18,24 +18,8 @@ function App() {
   const [page, setPage] = useState(1);
   const [images, setImages] = useState([]);
   const [modal, setModal] = useState("");
+  const [loadMoreBtn, setLoadMoreBtn] = useState(false);
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   const { searchInput, page } = this.state;
-  //   if (prevState.searchInput !== searchInput) {
-  //     this.searchImages(searchInput, 1);
-  //   }
-  //   if (prevState.page !== page) {
-  //     this.searchImages(searchInput, page);
-  //   }
-  // }
-  // useEffect(() => {
-  //   if (searchInput === "") {
-  //     return;
-  //   }
-  //   if (searchInput !== setSearchInput((prevState) => prevState)) {
-  //     searchImages(searchInput, 1);
-  //   }
-  // }, [searchInput]);
   useEffect(() => {
     if (setSearchInput((prevState) => prevState) !== searchInput) {
       setPage(1);
@@ -56,10 +40,16 @@ function App() {
     imagesApi
       .fetchImages(searchInput, page)
       .then((images) => {
+        setLoadMoreBtn(true);
+        const totalPages = Math.round(images.data.totalHits / 12);
+        if (page === totalPages) {
+          setLoadMoreBtn(false);
+        }
         if (images.data.hits.length === 0) {
           toast.error(`"${searchInput}" is not found`, {
             theme: "dark",
           });
+          setLoadMoreBtn(false);
         }
         setImages((prevState) => {
           return page === 1
@@ -80,13 +70,13 @@ function App() {
       });
   };
 
-  const handleFormSubmit = (searchInput) => {
+  function handleFormSubmit(searchInput) {
     if (searchInput.trim === "") {
       setImages([]);
     } else {
       setSearchInput(searchInput);
     }
-  };
+  }
 
   const onLoadMoreClick = () => {
     setPage((prevState) => {
@@ -119,7 +109,7 @@ function App() {
           width={80}
         />
       )}
-      {images.length > 0 && (
+      {loadMoreBtn && (
         <Button
           type="button"
           name="Load more"
