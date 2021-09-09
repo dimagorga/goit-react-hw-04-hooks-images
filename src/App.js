@@ -21,12 +21,6 @@ function App() {
   const [loadMoreBtn, setLoadMoreBtn] = useState(false);
 
   useEffect(() => {
-    if (setSearchInput((prevState) => prevState) !== searchInput) {
-      setPage(1);
-    }
-  }, [searchInput]);
-
-  useEffect(() => {
     if (searchInput === "") {
       return;
     }
@@ -75,6 +69,7 @@ function App() {
       setImages([]);
     } else {
       setSearchInput(searchInput);
+      setPage(1);
     }
   }
 
